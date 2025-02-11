@@ -8,8 +8,6 @@ define('BASEPATH', '/');
 Route::add('/', function () {
     $title = "";
     require "views/home.php";
-    $result = DBFunctions::executeBatch(['sql'=>"INSERT INTO user (name) VALUES (?)", ["test@example.com"]], true);    
-    print_r($result);
 });
 
 Route::add('/contact', function () {

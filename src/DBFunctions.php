@@ -109,19 +109,19 @@ class DBFunctions {
     
     // Login User
     public static function login($email, $password, $saveLogin = false) {
-        $user = self::query("SELECT * FROM users WHERE email = ?", [$email], true);
-        if ($user && Utils::verifyPassword($password, $user['password'])) {
+        $user = self::query("SELECT * FROM t_users WHERE u_email = ?", [$email], true);
+        if ($user && Utils::verifyPassword($password, $user['u_password'])) {
             $authKey = self::encrypt([
                 'id' => $user['id'], 
                 'uid' => $user['uid'], 
-                'email' => $user['email'], 
-                'name' => $user['name'], 
-                'profile' => $user['profile']
+                'email' => $user['u_email'], 
+                'name' => $user['u_name'], 
+                'profile' => $user['u_profile']
             ]);
 
             $expiry_time = time() + ($saveLogin ? (30 * 24 * 60 * 60) : (1 * 60 * 60));
             // Insert the new token
-            self::execute("INSERT INTO t_token (uid, tokenId, validTill) VALUES (?, ?, ?)", [
+            self::execute("INSERT INTO t_token (uid, token_id, valid_till) VALUES (?, ?, ?)", [
                 $user["uid"], $authKey, $expiry_time
             ]);
 
@@ -147,7 +147,7 @@ class DBFunctions {
 
         if (!$token) return self::logout();
         
-        $user = self::query("SELECT COUNT(id) as count FROM t_token WHERE tokenId = ?", [$token], true);
+        $user = self::query("SELECT COUNT(id) as count FROM t_token WHERE token_id = ?", [$token], true);
         return ($user && $user['count'] > 0) ? ['sessionSts' => true] : self::logout();
     }
 

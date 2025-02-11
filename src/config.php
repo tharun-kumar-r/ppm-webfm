@@ -5,9 +5,8 @@ class Config {
     public const APP = [
         'name' => 'MyApp',
         'version' => '1.0.0',
-        'dev' => true,
-        'isDynamicApp' => true,
-        'isIndexAble' => false,   
+        'dev' => true, //For Indexing
+        'isDynamicApp' => true, //Dynamic App
     ];
 
     public const DB = [
@@ -15,13 +14,14 @@ class Config {
         'dbname' => 'test',
         'username' => 'root',
         'password' => '',
-        'charset' => 'utf8mb4'
+        'charset' => 'utf8mb4',
+        'initDB'=> true, //For app Database    
     ];
 
     public const SESSION_TYPE = [
         'type' => STRINGS['SESSION'], //STRINGS['COOKIE']
-        'session_name' => 'session_uid',
-        'secret' => 'grfgrsdgdfdfbfd'
+        'session_name' => 'TEST_DEV_SNAME',
+        'secret' => 'TEST_DEV'
     ];
 }
 
