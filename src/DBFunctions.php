@@ -1,5 +1,6 @@
 <?php
-require_once 'config.php';
+require_once 'Utils.php';
+require_once 'DataBase.php';
 
 class DBFunctions {
     private static $cipher = "AES-256-CBC"; 
@@ -17,89 +18,99 @@ class DBFunctions {
         } else {
             throw new Exception("Encryption key is not set in config.");
         }
-
         self::$session = Config::SESSION_TYPE ?? null;
     }
-
+    
     // Get a single instance of DBFunctions
     public static function pdo() {
         if (self::$instance === null) {
             self::$instance = new DBFunctions();
         }
-        return self::$instance;
+        return self::$instance->pdo;
     }
 
     public static function encrypt($plaintext) {
         if (!isset(self::$key)) {
             throw new Exception("Encryption key is not set.");
         }
-        return base64_encode(openssl_encrypt($plaintext, self::$cipher, self::$key, 0, self::$iv));
+        return base64_encode(openssl_encrypt(json_encode($plaintext), self::$cipher, self::$key, 0, self::$iv));
     }
 
     public static function decrypt($encryptedText) {
         if (!isset(self::$key)) {
             throw new Exception("Decryption key is not set.");
         }
-        return openssl_decrypt(base64_decode($encryptedText), self::$cipher, self::$key, 0, self::$iv);
+        return json_decode(openssl_decrypt(base64_decode($encryptedText), self::$cipher, self::$key, 0, self::$iv), true);
     }
     
     // Universal Query Shortcut
-    public function query($sql, $params = [], $fetchOne = false) {
-        $stmt = $this->pdo->prepare($sql);
+    public static function query($sql, $params = [], $fetchOne = false) {
+        $stmt = self::pdo()->prepare($sql);
         $stmt->execute($params);
         return $fetchOne ? $stmt->fetch(PDO::FETCH_ASSOC) : $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Execute INSERT, UPDATE, DELETE Queries with Transaction Support
-    public function execute($sql, $params = []) {
-        $checksession = checkSession();
-        if($checksession['sts'] == 0){
-            return ["msg" => MESSAGES.SESSION_EXPIRED, "sts" => 1];
+    // Execute Queries with Transaction Support
+    public static function execute($sql, $params = [], $noSession = false) {
+        if (!$noSession) {
+            $checksession = self::checkSession();
+            if ($checksession['sessionSts'] == false) {
+                return ["msg" => MESSAGES['SESSION_EXPIRED'], "sts" => false];
+            }
         }
+    
         try {
-            $this->pdo->beginTransaction(); // Start transaction
-            $stmt = $this->pdo->prepare($sql);
+            $pdo = self::pdo();
+            $pdo->beginTransaction(); // Start transaction
+            $stmt = $pdo->prepare($sql);
             $success = $stmt->execute($params);
-
+    
             if ($success) {
-                $this->pdo->commit(); // Commit if successful
-                return true;
+                $pdo->commit(); // Commit if successful
+                return ["msg" => MESSAGES['EXEC_SUCCESS'], "sts" => true]; 
             } else {
-                $this->pdo->rollBack(); // Rollback if failed
-                return false;
+                $pdo->rollBack(); // Rollback if failed
+                return ["msg" => MESSAGES['EXEC_FAILED'], "sts" => false]; 
             }
         } catch (PDOException $e) {
-            $this->pdo->rollBack(); // Rollback on exception
-            error_log("DB Error: " . $e->getMessage()); // Log error
-            return false;
+            self::pdo()->rollBack();
+            return ["msg" => $e->getMessage(), "sts" => false]; 
         }
     }
 
-    public function executeBatch($queries) {
+    // Execute Batch Queries
+    public static function executeBatch($queries, $noSession = false) {
+        if (!$noSession) {
+            $checksession = self::checkSession();
+            if ($checksession['sessionSts'] == false) {
+                return ["msg" => MESSAGES['SESSION_EXPIRED'], "sts" => false];
+            }
+        }
+
         try {
-            $this->pdo->beginTransaction(); // Start Transaction
-    
+            $pdo = self::pdo();
+            $pdo->beginTransaction(); // Start Transaction
+
             foreach ($queries as $query) {
                 if (!isset($query['sql'])) {
                     throw new Exception("Query statement missing in batch execution.");
                 }
-                $stmt = $this->pdo->prepare($query['sql']);
+                $stmt = $pdo->prepare($query['sql']);
                 $stmt->execute($query['params'] ?? []);
             }
-    
-            $this->pdo->commit(); // Commit all queries
-            return true;
+
+            $pdo->commit(); // Commit all queries
+            return ["msg" => MESSAGES['EXEC_SUCCESS'], "sts" => true]; 
         } catch (PDOException $e) {
-            $this->pdo->rollBack(); // Rollback if any query fails
-            error_log("Batch Query Error: " . $e->getMessage());
-            return "Error: " . $e->getMessage();
+            $pdo->rollBack(); 
+            return ["msg" => $e->getMessage(), "sts" => false];
         }
     }
     
     // Login User
     public static function login($email, $password, $saveLogin = false) {
         $user = self::query("SELECT * FROM users WHERE email = ?", [$email], true);
-        if ($user && password_verify($password, $user['password'])) {
+        if ($user && Utils::verifyPassword($password, $user['password'])) {
             $authKey = self::encrypt([
                 'id' => $user['id'], 
                 'uid' => $user['uid'], 
@@ -107,56 +118,58 @@ class DBFunctions {
                 'name' => $user['name'], 
                 'profile' => $user['profile']
             ]);
-    
+
             $expiry_time = time() + ($saveLogin ? (30 * 24 * 60 * 60) : (1 * 60 * 60));
             // Insert the new token
             self::execute("INSERT INTO t_token (uid, tokenId, validTill) VALUES (?, ?, ?)", [
                 $user["uid"], $authKey, $expiry_time
             ]);
-    
-            if (self::$session['type'] === STRINGS.COOKIE) {
-                // Store Auth Key in Secure HTTP-only Cookie
+
+            if (self::$session['type'] === STRINGS['COOKIE']) {
                 setcookie(self::$session['session_name'], $authKey, [
                     "httponly" => true,  
-                    //"secure" => true,    
                     "samesite" => "Strict", 
                     "path" => "/",       
-                    "expires" => time() + ($saveLogin ? (30 * 24 * 60 * 60) : 3600) // Fixed expiration
+                    "expires" => $expiry_time 
                 ]);
-    
-                return ["msg" => MESSAGES.L_SUCCESS, "sts" => 1];
             } else {
                 $_SESSION[self::$session['session_name']] = $authKey;
-                return ["msg" => MESSAGES.L_SUCCESS, "sts" => 1];
             }
+            return ["msg" => MESSAGES['L_SUCCESS'], "sts" => true];
         }
-        return ["msg" => MESSAGES.L_FAILED, "sts" => 0];
+        return ["msg" => MESSAGES['L_FAILED'], "sts" => false];
     }
     
-    public static function checkSession()
-    {
-        static $token;
-        if (self::$session['type'] === STRINGS.COOKIE) {
-            $token = $_COOKIE[self::$session['session_name']];
-        } else {
-            $token = $_SESSION[self::$session['session_name']];
-        }
+    public static function checkSession() {
+        $token = self::$session['type'] === STRINGS['COOKIE'] 
+                 ? ($_COOKIE[self::$session['session_name']] ?? null) 
+                 : ($_SESSION[self::$session['session_name']] ?? null);
 
-        $user = self::query("SELECT count(id) FROM t_token WHERE tokenId = ?", [$token], true);
-        return empty($user) ? logout() : ['sts'=>0];
+        if (!$token) return self::logout();
+        
+        $user = self::query("SELECT COUNT(id) as count FROM t_token WHERE tokenId = ?", [$token], true);
+        return ($user && $user['count'] > 0) ? ['sessionSts' => true] : self::logout();
     }
 
     public static function logout() {       
-        if (self::$session['type'] === STRINGS.COOKIE) {
-            setcookie(self::$session['session_name'], "", time() - 3600, "/", "", true, true); // Expire the cookie
+        if (self::$session['type'] === STRINGS['COOKIE']) {
+            setcookie(self::$session['session_name'], "", time() - 3600, "/", "", true, true);
         } else {
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
             session_destroy();
         }
-        return ["msg" => MESSAGES.L_LOGOUT_S, "sts" => 1];
+        return ["msg" => MESSAGES['L_LOGOUT_S'], "sts" => true, 'sessionSts' => false];
     }
 
+    public static function isLoggedIn() {
+        $token = self::$session['type'] === STRINGS['COOKIE'] 
+                 ? ($_COOKIE[self::$session['session_name']] ?? null) 
+                 : ($_SESSION[self::$session['session_name']] ?? null);
 
-
-
+        return !empty($token);
+    }
 }
+
 ?>

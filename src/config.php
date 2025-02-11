@@ -1,51 +1,28 @@
 <?php 
-require_once 'constants.php';
+require_once 'Constants.php';
 
 class Config {
-    public const GENERAL = [
+    public const APP = [
         'name' => 'MyApp',
         'version' => '1.0.0',
-        'debug' => true
+        'dev' => true,
+        'isDynamicApp' => true,
+        'isIndexAble' => false,   
     ];
 
     public const DB = [
         'host' => 'localhost',
-        'dbname' => 'my_database',
+        'dbname' => 'test',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8mb4'
     ];
 
     public const SESSION_TYPE = [
-        'type' => STRINGS.SESSION, //STRINGS.COOKIE
+        'type' => STRINGS['SESSION'], //STRINGS['COOKIE']
         'session_name' => 'session_uid',
-        'secret' => ''
+        'secret' => 'grfgrsdgdfdfbfd'
     ];
-}
-
-
-class Database {
-    private static $instance = null;
-    private $pdo;
-
-    private function __construct() {
-        try {
-            $dbConfig = Config::DB;  
-            $this->pdo = new PDO(
-                "mysql:host={$dbConfig['host']};dbname={$dbConfig['dbname']};charset={$dbConfig['charset']}", $dbConfig['username'], $dbConfig['password']
-            );
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            die("Database Connection Failed: " . $e->getMessage());
-        }
-    }
-
-    public static function sql() {
-        if (self::$instance === null) {
-            self::$instance = new Database();
-        }
-        return self::$instance->pdo;
-    }
 }
 
 ?>

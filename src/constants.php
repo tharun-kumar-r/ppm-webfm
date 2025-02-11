@@ -16,6 +16,14 @@ const MESSAGES = [
     'OTP_SENT_EMAIL' => 'OTP sent successfully to registered email.',
     'OTP_SENT_MOBILE' => 'OTP sent successfully to registered mobile number.',
     'SESSION_EXPIRED' => 'Invalid session, please log in again.',
+    'EXEC_SUCCESS' => 'Executed successfully.',
+    'EXEC_FAILED' => 'Execution Failed.',
+    'INVALID_INPUT' => 'Invalid Input.',
+    'FILE_NOT_FOUND' => 'File not found.',
+    'UPLOAD_FAILED' => 'Upload Failed.',
+    'FILE_TYPE_NOT_ALLOWED' => 'File type not allowed',
+    'INVALID_FILE' => 'Invalid File type',
+    'INVALID_DATE' => 'Invalid Date',
 ];
 
 const STRINGS = [

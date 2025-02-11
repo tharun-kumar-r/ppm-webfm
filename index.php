@@ -1,21 +1,55 @@
 <?php
-require_once 'src/packages/router.php';
-require_once 'src/auth.php';
+require_once 'src/Config.php';
+require_once 'src/packages/Router.php';
+Config::APP['isDynamicApp'] && (require_once 'src/DBFunctions.php') && DBFunctions::pdo();
+use Steampixel\Route;
+define('BASEPATH', '/');
 
-use Steampixel\Router;
+Route::add('/', function () {
+    $title = "";
+    require "views/home.php";
+    $result = DBFunctions::executeBatch(['sql'=>"INSERT INTO user (name) VALUES (?)", ["test@example.com"]], true);    
+    print_r($result);
+});
 
-Router::add('/', function() { require 'views/home.php'; });
-Router::add('/contact', function() { require 'views/contact.php'; });
+Route::add('/contact', function () {
+    $title = "";
+    require "src/contact.php";
+}, 'GET', 'POST');
 
-Router::add('/api/login', function() {
+
+
+
+/*
+//SingleParm
+Route::add('/user/([0-9]*)', function ($id) {
+    $title = "";
+}, 'GET', 'POST');
+
+//MultiParm
+Route::add('/tours/([0-9]+)/(.+)', function ($id, $name) {
+     $title = "";
+}, 'GET', 'POST');
+
+//API POST
+Route::add('/api/login', function() {
     $data = json_decode(file_get_contents("php://input"), true);
     echo json_encode(Auth::login($data['email'], $data['password']));
 }, 'POST');
 
-Router::add('/api/logout', function() {
+//API GET
+Route::add('/api/logout', function() {
     echo json_encode(Auth::logout());
 }, 'GET');
+*/
 
-Router::pathNotFound(function() { echo "404 - Page Not Found"; });
-Router::run('/');
+Route::pathNotFound(function ($path) {
+    $title = "File not found!.";
+    require "src/notfound.php";
+});
+
+
+
+Route::run('/');
 ?>
+
