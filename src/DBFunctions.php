@@ -121,7 +121,7 @@ class DBFunctions {
 
             $expiry_time = time() + ($saveLogin ? (30 * 24 * 60 * 60) : (1 * 60 * 60));
             // Insert the new token
-            self::execute("INSERT INTO t_token (uid, token_id, valid_till) VALUES (?, ?, ?)", [
+            self::execute("INSERT INTO token (uid, token_id, valid_till) VALUES (?, ?, ?)", [
                 $user["uid"], $authKey, $expiry_time
             ]);
 
@@ -147,7 +147,7 @@ class DBFunctions {
 
         if (!$token) return self::logout();
         
-        $user = self::query("SELECT COUNT(id) as count FROM t_token WHERE token_id = ?", [$token], true);
+        $user = self::query("SELECT COUNT(id) as count FROM token WHERE token_id = ?", [$token], true);
         return ($user && $user['count'] > 0) ? ['sessionSts' => true] : self::logout();
     }
 

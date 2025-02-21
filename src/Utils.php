@@ -29,8 +29,6 @@ class Utils {
 
     // Get current date and time in different formats
     public static function dateTimeNow($type = 'full') {
-        date_default_timezone_set('UTC'); // Ensure consistent timezone
-
         $formats = [
             'full'     => 'jS F Y h:i A',
             'date'     => 'Y-m-d',
@@ -59,42 +57,6 @@ class Utils {
         return ["msg" => $ip, "sts" => true];
     }
 
-    // Secure file upload
-    public static function uploadFile($file, $uploadDir, $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'pdf']) {
-        if (!isset($file['name']) || !isset($file['tmp_name'])) {
-            return ["msg" => MESSAGES::INVALID_FILE, "sts" => false];
-        }
-
-        $fileExt = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
-        if (!in_array($fileExt, $allowedTypes)) {
-            return ["msg" => MESSAGES::FILE_TYPE_NOT_ALLOWED, "sts" => false];
-        }
-
-        $uniqueName = time() . '_' . bin2hex(random_bytes(4)) . '.' . $fileExt;
-        $targetFile = $uploadDir . $uniqueName;
-
-        return move_uploaded_file($file["tmp_name"], $targetFile) 
-            ? ["msg" => $targetFile, "sts" => true] 
-            : ["msg" => MESSAGES::UPLOAD_FAILED, "sts" => false];
-    }
-
-    // Secure file download
-    public static function downloadFile($filePath, $fileName) {
-        if (!file_exists($filePath)) {
-            return ["msg" => MESSAGES::FILE_NOT_FOUND, "sts" => false];
-        }
-
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="' . basename($fileName) . '"');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($filePath));
-        readfile($filePath);
-        exit;
-    }
-
     // Generate SEO-friendly URL slugs
     public static function urlSlug($string) {
         if (empty($string)) {
@@ -105,42 +67,23 @@ class Utils {
         return ["msg" => strtolower(trim($string, '-')), "sts" => true];
     }
 
-    // Send a JSON response
-    public static function jsonResponse($data, $status = 200) {
-        header("Content-Type: application/json");
-        http_response_code($status);
-        echo json_encode($data);
-        exit;
+    // Parce Url to Text
+    public static function getUrlText($url, $true = true) {
+        $path = parse_url($url, PHP_URL_PATH);
+        $segments = explode('/', trim($path, '/'));
+        $lastSegment = end($segments);
+        $title = ucwords($true ? str_replace('-', ' ', $lastSegment) : $lastSegment);
+        return ["msg" => self::sanitize($title), "sts" => true];
     }
 
-    // API request using cURL
-    public static function apiRequest($url, $method = 'GET', $data = [], $headers = []) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
-
-        if (!empty($data)) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-            $headers[] = 'Content-Type: application/json';
-        }
-
-        if (!empty($headers)) {
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        }
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if ($response === false) {
-            $error = curl_error($ch);
-            curl_close($ch);
-            return ["msg" => $error, "sts" => false];
-        }
-
-        curl_close($ch);
-        return ["msg" => json_decode($response, true), "sts" => true];
+    // Get Current Url as Text
+    public static function getCurrentUrl($current = true) {
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+        $host = $_SERVER['HTTP_HOST'];
+        $uri = $_SERVER['REQUEST_URI'];        
+        return $protocol . "://" . $host . ($current ? $uri : "");
     }
+
 }
 
 ?>

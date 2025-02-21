@@ -6,13 +6,12 @@ use Steampixel\Route;
 define('BASEPATH', '/');
 
 Route::add('/', function () {
-    $title = "";
     require "views/home.php";
+   
 });
 
-Route::add('/contact', function () {
-    $title = "";
-    require "src/contact.php";
+Route::add('/contact-us', function () {
+    require "views/home.php";
 }, 'GET', 'POST');
 
 
@@ -21,12 +20,10 @@ Route::add('/contact', function () {
 /*
 //SingleParm
 Route::add('/user/([0-9]*)', function ($id) {
-    $title = "";
 }, 'GET', 'POST');
 
 //MultiParm
 Route::add('/tours/([0-9]+)/(.+)', function ($id, $name) {
-     $title = "";
 }, 'GET', 'POST');
 
 //API POST
@@ -42,8 +39,7 @@ Route::add('/api/logout', function() {
 */
 
 Route::pathNotFound(function ($path) {
-    $title = "File not found!.";
-    require "src/notfound.php";
+    require "views/notFound.php";
 });
 
 

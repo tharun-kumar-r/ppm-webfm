@@ -41,7 +41,7 @@ if (Config::DB['initDB']) {
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
         $pdo->exec($sql);
-        $sql = "CREATE TABLE IF NOT EXISTS t_token (
+        $sql = "CREATE TABLE IF NOT EXISTS token (
             id           INT AUTO_INCREMENT PRIMARY KEY,
             uid          VARCHAR(20) NOT NULL, 
             token_id     VARCHAR(255) UNIQUE NOT NULL,

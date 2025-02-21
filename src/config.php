@@ -1,5 +1,6 @@
 <?php 
 require_once 'Constants.php';
+date_default_timezone_set('Asia/Kolkata');
 
 class Config {
     public const APP = [
@@ -7,6 +8,15 @@ class Config {
         'version' => '1.0.0',
         'dev' => true, //For Indexing
         'isDynamicApp' => true, //Dynamic App
+        'businessType' => 'Software Company',
+        'logo' => 'https://rajsoft.org.in/img/icon.png',
+        'country' => 'IN',
+        //For Static website
+        'metaData' => [
+            'meta_description' => 'Test Description',
+            'meta_keywords' => 'Test Keyword',
+            'og_image' => 'https://rajsoft.org.in/img/icon.png',
+        ],
     ];
 
     public const DB = [
@@ -15,7 +25,7 @@ class Config {
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8mb4',
-        'initDB'=> true, //For app Database    
+        'initDB'=> false, //For app Database    
     ];
 
     public const SESSION_TYPE = [
