@@ -6,7 +6,7 @@ use Steampixel\Route;
 define('BASEPATH', '/');
 
 Route::add('/', function () {
-    require "views/home.php";  
+    require "views/home.php"; 
 });
 
 Route::add('/contact-us', function () {
