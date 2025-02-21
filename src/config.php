@@ -1,5 +1,5 @@
 <?php 
-require_once 'Constants.php';
+require 'Constants.php';
 date_default_timezone_set('Asia/Kolkata');
 
 class Config {
@@ -25,7 +25,7 @@ class Config {
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8mb4',
-        'initDB'=> true, //For app Database    
+        'initDB'=> false, //For app Database    
     ];
 
     public const SESSION_TYPE = [

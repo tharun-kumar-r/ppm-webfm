@@ -6,14 +6,12 @@ use Steampixel\Route;
 define('BASEPATH', '/');
 
 Route::add('/', function () {
-    require "views/home.php";
-   
+    require "views/home.php";  
 });
 
 Route::add('/contact-us', function () {
     require "views/home.php";
-}, 'GET', 'POST');
-
+}, ['GET', 'POST']);
 
 
 
@@ -41,8 +39,6 @@ Route::add('/api/logout', function() {
 Route::pathNotFound(function ($path) {
     require "views/notFound.php";
 });
-
-
 
 Route::run('/');
 ?>
