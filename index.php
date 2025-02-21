@@ -46,4 +46,3 @@ Route::pathNotFound(function ($path) {
 
 Route::run('/');
 ?>
-

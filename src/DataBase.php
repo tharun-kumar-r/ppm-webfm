@@ -29,14 +29,14 @@ class Database {
 if (Config::DB['initDB']) {
     try {
         $pdo = Database::sql();
-        $sql = "CREATE TABLE IF NOT EXISTS t_users (
+        $sql = "CREATE TABLE IF NOT EXISTS users (
             id           INT AUTO_INCREMENT PRIMARY KEY,
             uid          VARCHAR(20) UNIQUE NOT NULL, 
-            u_name       VARCHAR(100) NOT NULL,
-            u_email      VARCHAR(150) UNIQUE NOT NULL,
-            u_password   VARCHAR(255) NOT NULL,
-            u_profile    VARCHAR(255) DEFAULT NULL,
-            u_type       ENUM('admin', 'user', 'worker') DEFAULT 'user',
+            name       VARCHAR(100) NOT NULL,
+            email      VARCHAR(150) UNIQUE NOT NULL,
+            password   VARCHAR(255) NOT NULL,
+            profile    VARCHAR(255) DEFAULT NULL,
+            type       ENUM('admin', 'user', 'worker') DEFAULT 'user',
             created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
@@ -47,7 +47,7 @@ if (Config::DB['initDB']) {
             token_id     VARCHAR(255) UNIQUE NOT NULL,
             valid_till   TIMESTAMP NOT NULL,
             created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (uid) REFERENCES t_users(uid) ON DELETE CASCADE
+            FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
         $pdo->exec($sql);
         $file = "Config.php";

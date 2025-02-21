@@ -109,14 +109,14 @@ class DBFunctions {
     
     // Login User
     public static function login($email, $password, $saveLogin = false) {
-        $user = self::query("SELECT * FROM t_users WHERE u_email = ?", [$email], true);
-        if ($user && Utils::verifyPassword($password, $user['u_password'])) {
+        $user = self::query("SELECT * FROM t_users WHERE email = ?", [$email], true);
+        if ($user && Utils::verifyPassword($password, $user['password'])) {
             $authKey = self::encrypt([
                 'id' => $user['id'], 
                 'uid' => $user['uid'], 
-                'email' => $user['u_email'], 
-                'name' => $user['u_name'], 
-                'profile' => $user['u_profile']
+                'email' => $user['email'], 
+                'name' => $user['name'], 
+                'profile' => $user['profile']
             ]);
 
             $expiry_time = time() + ($saveLogin ? (30 * 24 * 60 * 60) : (1 * 60 * 60));

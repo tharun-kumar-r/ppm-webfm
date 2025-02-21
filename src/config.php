@@ -25,7 +25,7 @@ class Config {
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8mb4',
-        'initDB'=> false, //For app Database    
+        'initDB'=> true, //For app Database    
     ];
 
     public const SESSION_TYPE = [
