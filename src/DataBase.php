@@ -29,36 +29,17 @@ class Database {
 if (Config::DB['initDB']) {
     try {
         $pdo = Database::sql();
-        $sql = "CREATE TABLE IF NOT EXISTS users (
-            id           INT AUTO_INCREMENT PRIMARY KEY,
-            uid          VARCHAR(20) UNIQUE NOT NULL, 
-            name       VARCHAR(100) NOT NULL,
-            email      VARCHAR(150) UNIQUE NOT NULL,
-            password   VARCHAR(255) NOT NULL,
-            profile    VARCHAR(255) DEFAULT NULL,
-            type       ENUM('admin', 'user', 'worker') DEFAULT 'user',
-            created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-        $pdo->exec($sql);
-        $sql = "CREATE TABLE IF NOT EXISTS token (
-            id           INT AUTO_INCREMENT PRIMARY KEY,
-            uid          VARCHAR(20) NOT NULL, 
-            token_id     VARCHAR(255) UNIQUE NOT NULL,
-            valid_till   TIMESTAMP NOT NULL,
-            created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-        $pdo->exec($sql);
-        $file = "Config.php";
-        $content = file_get_contents($file);  
-        if(!$content){
-            echo "<font color='red'>Error: Unable to read file. Please set AppInit <b>False</b></font><br><Br>";
-        }else{
-            $updatedContent = preg_replace("/'initApp'\s*=>\s*true/", "'initApp' => false", $content);
-            file_put_contents($file, $updatedContent);
+        $sqlFile = __DIR__ . '/import.sql';
+        if (file_exists($sqlFile)) {
+            $sqlContent = file_get_contents($sqlFile);
+            $pdo->beginTransaction();
+            $pdo->exec($sqlContent);
+            $pdo->commit();
+            echo "Database initialized successfully.";
+        } else {
+            die("SQL file not found.");
         }
     } catch (PDOException $e) {
-        die("Error creating tables: " . $e->getMessage());
+        die("<font style='font-size:19px;color:red'>Error importing SQL file: " . $e->getMessage() . " Plase turn off AppInt</font>");
     }
 }
