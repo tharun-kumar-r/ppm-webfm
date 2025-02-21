@@ -1,7 +1,6 @@
 <?php
-
 class Utils {
-
+    
     // Sanitize input data
     public static function sanitize($data) {
         return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
@@ -23,7 +22,7 @@ class Utils {
             $dateTime = new DateTime($data);
             return ["msg" => $dateTime->format('jS F Y h:i A'), "sts" => true];
         } catch (Exception $e) {
-            return ["msg" => MESSAGES::INVALID_DATE, "sts" => false];
+            return ["msg" => MESSAGES['INVALID_DATE'], "sts" => false];
         }
     }
 
@@ -60,7 +59,7 @@ class Utils {
     // Generate SEO-friendly URL slugs
     public static function urlSlug($string) {
         if (empty($string)) {
-            return ["msg" => MESSAGES::INVALID_INPUT, "sts" => false];
+            return ["msg" => MESSAGES['INVALID_INPUT'], "sts" => false];
         }
 
         $string = preg_replace('/[^A-Za-z0-9-]+/', '-', $string);
