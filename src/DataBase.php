@@ -14,6 +14,10 @@ class Database {
                 $dbConfig['password']
             );
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            if (Config::SESSION_TYPE['type'] === STRINGS['SESSION']) {
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }}
         } catch (PDOException $e) {
             die("Database Connection Failed: " . $e->getMessage()); 
         }

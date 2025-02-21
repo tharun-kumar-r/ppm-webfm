@@ -2,9 +2,9 @@
 
 $uploads_dir = "uploads/";
 $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'txt', 'doc', 'docx']; // Allowed file types
-$maxFileSize = 1 * 1024 * 1024; // 5MB limit
-
-if(empty($_SESSION['dscd']))
+$maxFileSize = 6 * 1024 * 1024; // 5MB limit
+$allowedsize = 5 * 1024 * 1024;
+if(empty($_SESSION['Test']))
 {
     echo "<script>window.location='/404'</script>";
 }

@@ -66,7 +66,8 @@ if (isset($_POST['action'])) {
 
 
     if ($action == "upload" && isset($_FILES['files'])) {
-
+        if(getFolderSize($uploads_dir) <= $allowedsize)
+        {
         foreach ($_FILES['files']['name'] as $key => $fileName) {
             $fileTmpName = $_FILES['files']['tmp_name'][$key];
             $fileSize = $_FILES['files']['size'][$key];
@@ -89,7 +90,7 @@ if (isset($_POST['action'])) {
             } else {
                 echo "error";
             }
-        }
+        }} else { echo "error";}
     }
 
 
@@ -108,6 +109,6 @@ if (isset($_POST['action'])) {
     }
 
     if ($action == "get_size") {
-        echo json_encode(['size' => formatSize(getFolderSize($uploads_dir))]);
+        echo json_encode(['size' => getFolderSize($uploads_dir)]);
     }
 }

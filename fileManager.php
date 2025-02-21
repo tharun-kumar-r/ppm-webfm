@@ -1,5 +1,7 @@
 <?php
 require "fileManagerConfig.php";
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -221,10 +223,11 @@ require "fileManagerConfig.php";
 
     <div class="container">
         <div class="toolbar">
-            <div><b>File Manager</b><br></div>
+            <div><b>File Manager : <span id="sfolderSize"></span></b><br></div>
             <div style="display:flex">
-                <label class="h-button"><input class="h-button" style="display:none" type="file" id="uploadFile"
-                        multiple><img style="height:20px;margin-right:4px;" src="<?php echo $upload_img;?>"> Upload
+                <label id="iupload" class="h-button"><input class="h-button" style="display:none" type="file"
+                        id="uploadFile" multiple><img style="height:20px;margin-right:4px;"
+                        src="<?php echo $upload_img;?>"> Upload
                     Files</label>
                 <button class="h-button" id="refresh"><img style="height:20px;margin-right:4px;"
                         src="<?php echo $refresh;?>"> Refresh</button>
@@ -271,7 +274,9 @@ require "fileManagerConfig.php";
             let fileList = $("#fileList").empty();
 
             if (currentPath !== "" && currentPath !== "<?php echo $uploads; ?>") {
-                fileList.append(`<li class="file-item" onclick="goBack()"><img height="20px" src="<?php echo $back ?>"/> Back</li>`);
+                fileList.append(
+                    `<li class="file-item" onclick="goBack()"><img height="20px" src="<?php echo $back ?>"/> Back</li>`
+                );
             }
             if (files.length > 0) {
                 files.forEach(file => {
@@ -305,7 +310,9 @@ require "fileManagerConfig.php";
             }
             loadImg();
             $("#deleteSelected").prop("disabled", $(".file-checkbox:checked").length === 0);
-                $("#selectAll").prop("checked", !$(".file-checkbox:checked").length === 0);
+            $("#selectAll").prop("checked", !$(".file-checkbox:checked").length === 0);
+            getFolderSize();
+
         });
     }
 
@@ -349,6 +356,7 @@ require "fileManagerConfig.php";
                 if (res === "success") loadFiles();
             });
         }
+        getFolderSize();
     }
 
     $("#uploadFile").change(function() {
@@ -493,8 +501,8 @@ require "fileManagerConfig.php";
 
         });
     });
-    
-      function download(file) {
+
+    function download(file) {
         let link = document.createElement("a");
         link.href = file;
         link.download = file.split('/').pop(); // Extracts filename from path
@@ -502,7 +510,18 @@ require "fileManagerConfig.php";
         link.click();
         document.body.removeChild(link);
     }
-    
+
+    function formatSize(size) {
+        const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        let i = 0;
+
+        while (size >= 1024 && i < units.length - 1) {
+            size /= 1024;
+            i++;
+        }
+
+        return size.toFixed(1) + ' ' + units[i];
+    }
 
 
     $("#deleteSelected").click(() => {
@@ -520,9 +539,34 @@ require "fileManagerConfig.php";
         }
     });
 
+    function getFolderSize() {
+        $.post("fileUpload.php", {
+            action: "get_size"
+        }, function(data) {
+            let response = JSON.parse(data);
+
+            if (response.size) {
+                $("#sfolderSize").text(formatSize(response.size) + " / " +
+                    formatSize("<?php echo $allowedsize;?>")); // Display folder size
+                if (response.size > <?php echo $allowedsize;?>) {
+                    $("#iupload").hide();
+                }else{
+                    $("#iupload").show();
+                }
+            } else {
+                $("#sfolderSize").text("0 KB" + " / " +
+                formatSize("<?php echo $allowedsize;?>"));
+            }
+        }).fail(function() {
+            $("#sfolderSize").text("Error fetching size");
+        });
+    }
+
+
     $("#refresh").click(loadFiles);
     loadFiles();
     noTask();
+    getFolderSize()
     </script>
 </body>
 
