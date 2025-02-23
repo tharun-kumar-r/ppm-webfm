@@ -1,20 +1,14 @@
 <?php
 require_once 'src/Config.php';
 require_once 'src/packages/Router.php';
-Config::APP['isDynamicApp'] && (require_once 'src/DBFunctions.php') && $db = DBFunctions::pdo();
+Config::APP['isDynamicApp'] && (require_once 'src/DBFunctions.php') && define('SQL', DBFunctions::pdo());
 use Steampixel\Route;
 define('BASEPATH', '/');
 
-Route::add('/', function () {
-    require "views/home.php";  
-
-    // echo Utils::hashPassword("tharun@gmail.com") . "  |   "; 
-    //print_r($db->login("tharun@gmail.com", 'tharun@gmail.com'));
-    //print_r($db->encrypt("UTRrdHZwd1dQa2JjaW4rWWRFWEFPeVk2Z0xVWGhFK1ExbG9IakE3cmFqSFJCdnNHWXZzTkk5L1dzajJnV2xzNzl1eCs5ZmJMRWhFOFhJWWVqcGYvWlRpTU9SRnNlRmx2RS91UlRkTTNlY0VJTE1FUXQ1TVZNSnFkZVNjMmJKbEdVK0s3Y2JxOGdzNG5JMFlyVGtjdERvaGFnNDBvYU5ydmxlNnk4WlpIc25ZPQ"));
-    //echo(DBFunctions::checkSession()['sessionSts'] ? "Session yes" : "Session no" );
-    //print_R(DBFunctions::getSessionValue());
-    //print_r($db->userLoggedIn());
-    
+Route::add('/', function () use ($pdo){
+    require "views/home.php";    
+    //echo SQL->encrypt("sacssdddsfsdsac");
+    //print_r(SQL->login("tharun@gmail.com", 'tharun@gmail.com'));
 
 });
 

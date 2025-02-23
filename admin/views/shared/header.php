@@ -7,7 +7,8 @@ $site_name = Config::APP['name'];
 $site_url = Utils::getCurrentUrl();
 $url_text = Utils::getUrlText($site_url)["msg"];
 $page_title = $url_text ? "$url_text | $site_name" : $site_name;
-if(DBFunctions::userLoggedIn()['type'] != 'admin')
+
+if(SQL->userLoggedIn()['type'] != 'admin')
 {
     echo "<script>window.location='".BASEPATH."'</script>";
     exit;

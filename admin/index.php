@@ -1,7 +1,7 @@
 <?php
 require_once '../src/Config.php';
 require_once '../src/packages/Router.php';
-Config::APP['isDynamicApp'] && (require_once '../src/DBFunctions.php') && DBFunctions::pdo();
+Config::APP['isDynamicApp'] && (require_once '../src/DBFunctions.php') && define('SQL', DBFunctions::pdo());
 use Steampixel\Route;
 define('BASEPATH', '/admin/');
 

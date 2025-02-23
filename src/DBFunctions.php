@@ -26,17 +26,17 @@ class DBFunctions {
         if (self::$instance === null) {
             self::$instance = new DBFunctions();
         }
-        return self::$instance->pdo;
+        return self::$instance;
     }
 
-    public static function encrypt($plaintext) {
+    public function encrypt($plaintext) {
         if (!isset(self::$key)) {
             throw new Exception("Encryption key is not set.");
         }
         return base64_encode(openssl_encrypt(json_encode($plaintext), self::$cipher, self::$key, 0, self::$iv));
     }
 
-    public static function decrypt($encryptedText) {
+    public function decrypt($encryptedText) {
         if (!isset(self::$key)) {
             throw new Exception("Decryption key is not set.");
         }
@@ -44,14 +44,14 @@ class DBFunctions {
     }
     
     // Universal Query Shortcut
-    public static function query($sql, $params = [], $fetchOne = false) {
-        $stmt = self::pdo() ->prepare($sql);
+    public function query($sql, $params = [], $fetchOne = false) {
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $fetchOne ? $stmt->fetch(PDO::FETCH_ASSOC) : $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Execute Queries with Transaction Support
-    public static function execute($sql, $params = [], $noSession = false) {
+    public function execute($sql, $params = [], $noSession = false) {
         if (!$noSession) {
             $checksession = self::checkSession();
             if ($checksession['sessionSts'] == false) {
@@ -60,7 +60,7 @@ class DBFunctions {
         }
     
         try {
-            $pdo = self::pdo();
+            $pdo = $this->pdo;
             $pdo->beginTransaction(); // Start transaction
             $stmt = $pdo->prepare($sql);
             $success = $stmt->execute($params);
@@ -73,13 +73,13 @@ class DBFunctions {
                 return ["msg" => MESSAGES['EXEC_FAILED'], "sts" => false]; 
             }
         } catch (PDOException $e) {
-            self::pdo()->rollBack();
+            $this->pdo->rollBack();
             return ["msg" => $e->getMessage(), "sts" => false]; 
         }
     }
 
     // Execute Batch Queries
-    public static function executeBatch($queries, $noSession = false) {
+    public function executeBatch($queries, $noSession = false) {
         if (!$noSession) {
             $checksession = self::checkSession();
             if ($checksession['sessionSts'] == false) {
@@ -88,7 +88,7 @@ class DBFunctions {
         }
 
         try {
-            $pdo = self::pdo();
+            $pdo = $this->pdo;
             $pdo->beginTransaction(); // Start Transaction
 
             foreach ($queries as $query) {
@@ -102,13 +102,13 @@ class DBFunctions {
             $pdo->commit(); // Commit all queries
             return ["msg" => MESSAGES['EXEC_SUCCESS'], "sts" => true]; 
         } catch (PDOException $e) {
-            $pdo->rollBack(); 
+            $this->pdo->rollBack(); 
             return ["msg" => $e->getMessage(), "sts" => false];
         }
     }
     
     // Login User
-    public static function login($email, $password, $saveLogin = false) {
+    public function login($email, $password, $saveLogin = false) {
         $user = self::query("SELECT * FROM users WHERE email = ?", [$email], true);
         $expiry_time = time() + ($saveLogin ? (30 * 24 * 60 * 60) : (3 * 60 * 60));
         if ($user && Utils::verifyPassword($password, $user['password'])) {
@@ -140,7 +140,7 @@ class DBFunctions {
         return ["msg" => MESSAGES['L_FAILED'], "sts" => false];
     }
     
-    public static function checkSession() {
+    public function checkSession() {
         if (self::$session['type'] === STRINGS['COOKIE']) {
             $token = $_COOKIE[self::$session['session_name']] ?? null;
             
@@ -163,7 +163,7 @@ class DBFunctions {
     }
     
 
-    public static function logout() {       
+    public function logout() {       
         if (self::$session['type'] === STRINGS['COOKIE']) {
             setcookie(self::$session['session_name'], "", time() - 3600, "/", "", true, true);
         } else {
@@ -175,7 +175,7 @@ class DBFunctions {
         return ["msg" => MESSAGES['L_LOGOUT_S'], "sts" => true, 'sessionSts' => false];
     }
 
-    public static function userLoggedIn() {
+    public function userLoggedIn() {
         if (self::$session['type'] === STRINGS['COOKIE']) {
             return self::decrypt($_COOKIE[self::$session['session_name']]);
         } else {
