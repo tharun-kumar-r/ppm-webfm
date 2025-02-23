@@ -45,7 +45,7 @@ class DBFunctions {
     
     // Universal Query Shortcut
     public static function query($sql, $params = [], $fetchOne = false) {
-        $stmt = self::pdo()->prepare($sql);
+        $stmt = self::pdo() ->prepare($sql);
         $stmt->execute($params);
         return $fetchOne ? $stmt->fetch(PDO::FETCH_ASSOC) : $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -109,21 +109,21 @@ class DBFunctions {
     
     // Login User
     public static function login($email, $password, $saveLogin = false) {
-        $user = self::query("SELECT * FROM t_users WHERE email = ?", [$email], true);
+        $user = self::query("SELECT * FROM users WHERE email = ?", [$email], true);
+        $expiry_time = time() + ($saveLogin ? (30 * 24 * 60 * 60) : (3 * 60 * 60));
         if ($user && Utils::verifyPassword($password, $user['password'])) {
             $authKey = self::encrypt([
-                'id' => $user['id'], 
                 'uid' => $user['uid'], 
                 'email' => $user['email'], 
                 'name' => $user['name'], 
-                'profile' => $user['profile']
+                'profile' => $user['profile'],
+                'type' => $user['type']
             ]);
-
-            $expiry_time = time() + ($saveLogin ? (30 * 24 * 60 * 60) : (1 * 60 * 60));
-            // Insert the new token
-            self::execute("INSERT INTO token (uid, token_id, valid_till) VALUES (?, ?, ?)", [
+                       
+           // Insert the new token
+           self::execute("INSERT INTO token (uid, token_id, valid_till) VALUES (?, ?, ?)", [
                 $user["uid"], $authKey, $expiry_time
-            ]);
+            ], true);
 
             if (self::$session['type'] === STRINGS['COOKIE']) {
                 setcookie(self::$session['session_name'], $authKey, [
@@ -141,15 +141,27 @@ class DBFunctions {
     }
     
     public static function checkSession() {
-        $token = self::$session['type'] === STRINGS['COOKIE'] 
-                 ? ($_COOKIE[self::$session['session_name']] ?? null) 
-                 : ($_SESSION[self::$session['session_name']] ?? null);
-
-        if (!$token) return self::logout();
-        
-        $user = self::query("SELECT COUNT(id) as count FROM token WHERE token_id = ?", [$token], true);
-        return ($user && $user['count'] > 0) ? ['sessionSts' => true] : self::logout();
+        if (self::$session['type'] === STRINGS['COOKIE']) {
+            $token = $_COOKIE[self::$session['session_name']] ?? null;
+            
+            if (!$token) {
+                return self::logout();
+            }
+    
+            $user = self::query(
+                "SELECT COUNT(id) as count FROM token WHERE token_id = ? AND valid_till > UNIX_TIMESTAMP()", 
+                [$token], 
+                true
+            );
+    
+            return ($user && $user['count'] > 0) ? ['sessionSts' => true] : self::logout();
+        } else {
+            return !empty($_SESSION[self::$session['session_name']]) 
+                ? ['sessionSts' => true] 
+                : self::logout();
+        }
     }
+    
 
     public static function logout() {       
         if (self::$session['type'] === STRINGS['COOKIE']) {
@@ -163,12 +175,12 @@ class DBFunctions {
         return ["msg" => MESSAGES['L_LOGOUT_S'], "sts" => true, 'sessionSts' => false];
     }
 
-    public static function isLoggedIn() {
-        $token = self::$session['type'] === STRINGS['COOKIE'] 
-                 ? ($_COOKIE[self::$session['session_name']] ?? null) 
-                 : ($_SESSION[self::$session['session_name']] ?? null);
-
-        return !empty($token);
+    public static function userLoggedIn() {
+        if (self::$session['type'] === STRINGS['COOKIE']) {
+            return self::decrypt($_COOKIE[self::$session['session_name']]);
+        } else {
+            return self::decrypt($_SESSION[self::$session['session_name']]);
+        }
     }
 }
 

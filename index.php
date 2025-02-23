@@ -7,13 +7,27 @@ define('BASEPATH', '/');
 
 Route::add('/', function () {
     require "views/home.php"; 
+    // echo Utils::hashPassword("tharun@gmail.com") . "  |   "; 
+    
+
+   // print_r(DBFunctions::login("tharun@gmail.com", 'tharun@gmail.com'));
+
+    //print_r(DBFunctions::decrypt("UTRrdHZwd1dQa2JjaW4rWWRFWEFPeVk2Z0xVWGhFK1ExbG9IakE3cmFqSFJCdnNHWXZzTkk5L1dzajJnV2xzNzl1eCs5ZmJMRWhFOFhJWWVqcGYvWlRpTU9SRnNlRmx2RS91UlRkTTNlY0VJTE1FUXQ1TVZNSnFkZVNjMmJKbEdVK0s3Y2JxOGdzNG5JMFlyVGtjdERvaGFnNDBvYU5ydmxlNnk4WlpIc25ZPQ"));
+    //echo(DBFunctions::checkSession()['sessionSts'] ? "Session yes" : "Session no" );
+    //print_R(DBFunctions::getSessionValue());
+
+   print_r(DBFunctions::userLoggedIn());
+    
+    
 });
 
 Route::add('/contact-us', function () {
     require "views/home.php";
 }, ['GET', 'POST']);
 
-
+Route::add('/fileManager', function () {
+    require "fileManager.php";
+});
 
 /*
 //SingleParm

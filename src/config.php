@@ -17,6 +17,11 @@ class Config {
             'meta_keywords' => 'Test Keyword',
             'og_image' => 'https://rajsoft.org.in/img/icon.png',
         ],
+        'uploads_dir' => "uploads/",
+        'allowedExtensions' => ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'txt', 'doc', 'docx'],
+        'maxFileSize' => (6 * 1024 * 1024),
+        'allowedsize' => (6 * 1024 * 1024)
+
     ];
 
     public const DB = [
@@ -29,7 +34,7 @@ class Config {
     ];
 
     public const SESSION_TYPE = [
-        'type' => STRINGS['SESSION'], //STRINGS['COOKIE']
+        'type' => STRINGS['COOKIE'], //STRINGS['SESSION'], 
         'session_name' => 'TEST_DEV_SNAME',
         'secret' => 'TEST_DEV'
     ];
