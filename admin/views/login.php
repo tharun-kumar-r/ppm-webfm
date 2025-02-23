@@ -1,18 +1,12 @@
-<?php
-if (!defined('BASEPATH')) {
-  header('Location:/404');
-}
-require_once __DIR__ . '/../../../src/Utils.php';
-$site_name = Config::APP['name'];
-$site_url = Utils::getCurrentUrl();
-$url_text = Utils::getUrlText($site_url)["msg"];
-$page_title = $url_text ? "$url_text | $site_name" : $site_name;
-if(DBFunctions::userLoggedIn()['type'] != 'admin')
+<?php 
+$login = DBFunctions::checkSession();
+if(DBFunctions::userLoggedIn()['type'] == 'admin' || $login['sessionSts'])
 {
-    echo "<script>window.location='".BASEPATH."'</script>";
+    echo "<script>window.location='".BASEPATH."home'</script>";
     exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 

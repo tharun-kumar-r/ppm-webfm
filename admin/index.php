@@ -3,17 +3,14 @@ require_once '../src/Config.php';
 require_once '../src/packages/Router.php';
 Config::APP['isDynamicApp'] && (require_once '../src/DBFunctions.php') && DBFunctions::pdo();
 use Steampixel\Route;
-define('BASEPATH', '/');
+define('BASEPATH', '/admin/');
 
 Route::add('/', function () {
-    require "views/home.php"; 
-    print_R(DBFunctions::userLoggedIn()['type']);
-   
-    print_r(DBFunctions::userLoggedIn());
-    
+    require "views/login.php";
+
 });
 
-Route::add('/contact-us', function () {
+Route::add('/home', function () {
     require "views/home.php";
 }, ['GET', 'POST']);
 
@@ -44,5 +41,5 @@ Route::pathNotFound(function ($path) {
     require "views/notFound.php";
 });
 
-Route::run('/admin/');
+Route::run(BASEPATH);
 ?>
