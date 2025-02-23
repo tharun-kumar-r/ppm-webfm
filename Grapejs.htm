@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrapeJS Bootstrap 4 Builder</title>
+
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet" href="https://preview.tabler.io/dist/css/tabler.min.css">
+    
+    <!-- GrapeJS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+
+    <div id="gjs">
+        <div class="container">
+            <ul>
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+            <img data-original="https://dummyimage.com/800x500/999/222" class="img-fluid"/>
+        </div>
+    </div>
+
+    <button id="saveBtn">Save</button>
+
+    <!-- GrapeJS Core -->
+    <script src="https://unpkg.com/grapesjs"></script>
+
+    <!-- Bootstrap 4 Plugin for GrapeJS -->
+    <script src="https://unpkg.com/grapesjs-blocks-bootstrap4"></script>
+
+    <!-- Bootstrap 4 JS -->
+    <script src="https://preview.tabler.io/dist/js/tabler.min.js"></script>
+
+    <!-- Lazy Load Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+    <script>
+        const editor = grapesjs.init({
+            container: '#gjs',
+            height: '85vh',
+            width: '100%',
+            fromElement: false,
+            storageManager: false,
+            plugins: ['grapesjs-blocks-bootstrap4'],
+            pluginsOpts: {
+                'grapesjs-blocks-bootstrap4': {
+                    blocks: [
+                        'container', 'row', 'column', 'text', 'image', 'alert', 'card', 'list', 'heading', 'paragraph', 'blockquote', 'lead', 'small-text'
+                    ],
+                    labels: {
+                        section: 'Section',
+                        row: 'Row',
+                        column: 'Column',
+                        text: 'Text',
+                        image: 'Image',
+                        alert: 'Alert',
+                        card: 'Card',
+                        list: 'List',
+                        heading: 'Heading',
+                        paragraph: 'Paragraph',
+                        blockquote: 'Blockquote',
+                        lead: 'Lead Text',
+                        'small-text': 'Small Text'
+                    }
+                }
+            },
+            canvas: {
+                styles: [
+                    'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css',
+                    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
+                ],
+                scripts: [
+                    'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js'
+                ]
+            }
+        });
+
+        // Remove unwanted form-related elements
+        editor.on('load', () => {
+            const toRemove = [
+                'form', 'input', 'textarea', 'select', 'checkbox', 'radio', 'label',
+                'button-group', 'carousel', 'navbar', 'button', 'dropdown', 'file', 'alert', 'tab', 'badge'
+            ];
+            toRemove.forEach(blockId => {
+                const block = editor.BlockManager.get(blockId);
+                if (block) {
+                    editor.BlockManager.remove(blockId);
+                }
+            });
+
+            // Add Bullet List Block with an Icon
+            editor.BlockManager.add('bullet-list', {
+                label: `<i style="font-size:30px;margin:10px" class="fas fa-list-ul"></i><br> Bullet List`,
+                category: 'Typography',
+                content: `<ul>
+                    <li>Item 1</li>
+                    <li>Item 2</li>
+                    <li>Item 3</li>
+                </ul>`
+            });
+
+            // Add Numbered List Block with an Icon
+            editor.BlockManager.add('numbered-list', {
+                label: `<i style="font-size:30px;margin:10px" class="fas fa-list-ol"></i><br> Numbered List`,
+                category: 'Typography',
+                content: `<ol>
+                    <li>First item</li>
+                    <li>Second item</li>
+                    <li>Third item</li>
+                </ol>`
+            });
+
+            // Add Table Block with an Icon
+            editor.BlockManager.add('table-block', {
+                label: `<i style="font-size:30px;margin:10px" class="fas fa-table"></i><br> Table`,
+                category: 'Typography',
+                content: `<table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Heading 1</th>
+                            <th>Heading 2</th>
+                            <th>Heading 3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Row 1 Col 1</td>
+                            <td>Row 1 Col 2</td>
+                            <td>Row 1 Col 3</td>
+                        </tr>
+                        <tr>
+                            <td>Row 2 Col 1</td>
+                            <td>Row 2 Col 2</td>
+                            <td>Row 2 Col 3</td>
+                        </tr>
+                    </tbody>
+                </table>`
+            });
+        });
+
+        // Extend Style Manager to Include Object Fit, Width, and Height for Images
+        editor.StyleManager.addSector('image-styles', {
+            name: 'Image Styles',
+            open: true,
+            buildProps: ['width', 'height', 'object-fit'],
+            properties: [
+                {
+                    property: 'width',
+                    type: 'integer',
+                    units: ['px', '%', 'rem', 'em'],
+                    default: 'auto',
+                    label: 'Width'
+                },
+                {
+                    property: 'height',
+                    type: 'integer',
+                    units: ['px', '%', 'rem', 'em'],
+                    default: 'auto',
+                    label: 'Height'
+                },
+                {
+                    property: 'object-fit',
+                    type: 'select',
+                    defaults: 'cover',
+                    label: 'Object Fit',
+                    options: [
+                        { value: 'fill', name: 'Fill' },
+                        { value: 'contain', name: 'Contain' },
+                        { value: 'cover', name: 'Cover' },
+                        { value: 'none', name: 'None' },
+                        { value: 'scale-down', name: 'Scale Down' }
+                    ]
+                }
+            ]
+        }, { at: 1 });
+
+        // Save Content
+        $('#saveBtn').click(function () {
+            var content = editor.getHtml();
+            content = content.replace(/<\/?body[^>]*>/g, ''); // Remove body tag
+            content = content.replace(/<img\s+src="/g, '<img data-original="'); // Replace img src
+            alert(content);
+        });
+
+        // Lazy Load Images
+        $(function() {
+            $("img").lazyload({
+                effect: "fadeIn"
+            });
+        });
+    </script>
+
+</body>
+</html>
