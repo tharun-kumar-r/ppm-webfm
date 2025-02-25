@@ -8,7 +8,7 @@ $site_url = Utils::getCurrentUrl();
 $url_text = Utils::getUrlText($site_url)["msg"];
 $page_title = $url_text ? "$url_text | $site_name" : $site_name;
 
-if(SQL->userLoggedIn()['type'] != 'admin')
+if(CORE->userLoggedIn()['type'] != 'admin')
 {
     echo "<script>window.location='".BASEPATH."'</script>";
     exit;

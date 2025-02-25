@@ -1,7 +1,7 @@
 <?php 
-define('SQL', DBFunctions::pdo());
-$login = SQL->checkSession();
-if(SQL->userLoggedIn()['type'] == 'admin' || $login['sessionSts'])
+define('CORE', DBFunctions::pdo());
+$login = CORE->checkSession();
+if(CORE->userLoggedIn()['type'] == 'admin' || $login['sessionSts'])
 {
     echo "<script>window.location='".BASEPATH."home'</script>";
     exit;

@@ -1,15 +1,15 @@
 <?php
 require_once 'src/Config.php';
 require_once 'src/packages/Router.php';
-Config::APP['isDynamicApp'] && (require_once 'src/DBFunctions.php') && define('SQL', DBFunctions::pdo());
+Config::APP['isDynamicApp'] && (require_once 'src/DBFunctions.php') && define('CORE', DBFunctions::pdo());
 use Steampixel\Route;
 define('BASEPATH', '/');
 
 Route::add('/', function () use ($pdo){
-    require "views/home.php";    
-    //echo SQL->encrypt("sacssdddsfsdsac");
-    //print_r(SQL->login("tharun@gmail.com", 'tharun@gmail.com'));
-
+    require "views/home.php";
+    //echo CORE->encrypt("sacssdddsfsdsac");
+    //print_r(CORE->login("tharun@gmail.com", 'tharun@gmail.com'));
+    //print_r(CORE->userLoggedIn());
 });
 
 Route::add('/contact-us', function () {

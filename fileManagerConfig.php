@@ -1,12 +1,12 @@
 <?php
 require_once 'src/Config.php';
-Config::APP['isDynamicApp'] && (require_once 'src/DBFunctions.php') && define('SQL', DBFunctions::pdo());
+Config::APP['isDynamicApp'] && (require_once 'src/DBFunctions.php') && define('CORE', DBFunctions::pdo());
 $uploads_dir = Config::APP['uploads_dir'];
 $allowedExtensions =Config::APP['allowedExtensions'];
 $maxFileSize = Config::APP['maxFileSize'];
 $allowedsize =Config::APP['allowedsize'];
-$login = SQL->checkSession();
-if(!SQL->userLoggedIn()['type'] == 'admin' || !$login['sessionSts'])
+$login = CORE->checkSession();
+if(!CORE->userLoggedIn()['type'] == 'admin' || !$login['sessionSts'])
 {
     echo "<script>window.location='/404'</script>";
     exit;
