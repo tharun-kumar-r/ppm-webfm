@@ -13,7 +13,7 @@ if (isset($_POST['login'])) {
             echo "<script>window.onload = function() {showError('Invalid Login Details!.')}</script>";
         }
     } else {
-        echo "<script>window.onload = function() {showError('". MSG['RECAPTCHA_ERROR'] ."')}</script>";
+        echo "<script>window.onload = function() {showError('" . MSG['RECAPTCHA_ERROR'] . "')}</script>";
     }
 }
 
@@ -29,8 +29,7 @@ if (isset($_POST['login'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Login to Webmaster</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
+    <?php echo Config::IMPORT['header']; ?>
     <style>
         .just-validate-error-label {
             margin-top: 4px;
@@ -49,21 +48,34 @@ if (isset($_POST['login'])) {
                 <form method="post" name="login" id="loginForm" autocomplete="off" novalidate>
                     <input type="hidden" name="login" value="FormLogin">
                     <div class="mb-3">
-                        <label class="form-label">Email address</label>
-                        <input id="email" type="email" name="email" class="form-control" value="<?php echo $_POST['email']; ?>" placeholder="your@email.com" >
+                        <?= Utils::renderInput(
+                            type: "email",
+                            label: "Email",
+                            name: "email",
+                            id: "email",
+                            value: $_POST['email'] ?? '',
+                            placeholder: "your@email.com",
+                            required: true
+                        ) ?>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label">
-                            Password
-                            <span class="form-label-description">
-                                <a href="./forgot-password.html">I forgot password</a>
-                            </span>
-                        </label>
-                        <input type="password" id="password" name="password" class="form-control" value="<?php echo $_POST['email']; ?>" placeholder="Your password">
+                        <?= Utils::renderInput(
+                            type: "password",
+                            label: "Password",
+                            name: "password",
+                            id: "password",
+                            value: $_POST['password'] ?? '',
+                            placeholder: "Your Password",
+                            required: true,
+                            linkRequired: true,
+                            linkName: "Forgot password?",
+                            linkHref:"forget"
+                        ) ?>
+                    
                     </div>
                     <div class="mb-2">
                         <label class="form-check">
-                            <input type="checkbox" <?php echo isset($_POST['saveLogin']) ? 'checked' :""; ?> name="saveLogin" class="form-check-input" />
+                            <input type="checkbox" <?php echo isset($_POST['saveLogin']) ? 'checked' : ""; ?> name="saveLogin" class="form-check-input" />
                             <span class="form-check-label">Remember me on this device</span>
                         </label>
                     </div>
@@ -78,29 +90,37 @@ if (isset($_POST['login'])) {
         </div>
 
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/just-validate@latest/dist/just-validate.production.min.js"></script>
-    <script src="https://dainty-macaron-bfe024.netlify.app/PopupJs.js"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <?php echo Config::IMPORT['footer'] . Config::IMPORT['popupjs'] . Config::IMPORT['cloudflare']; ?>
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const validation = new JustValidate("#loginForm");
-        const errorIcon = '<?php echo ICO['info']; ?>';
+        document.addEventListener("DOMContentLoaded", function() {
+            const validation = new JustValidate("#loginForm");
+            const errorIcon = '<?php echo ICO['info']; ?>';
 
-        // Validation rules mapping
-        const fields = {
-            "#email": [
-                { rule: "required", errorMessage: errorIcon + "<?php echo MSG['PE'] . 'Email!'; ?>" },
-                { rule: "email", errorMessage: errorIcon + "<?php echo MSG['IV'] . 'Email!'; ?>" }
-            ],
-            "#password": [
-                { rule: "required", errorMessage: errorIcon + "<?php echo MSG['PE'] . 'Password!'; ?>" },
-                { rule: "minLength", value: 6, errorMessage: errorIcon + "<?php echo 'Password' . MSG['MINL']; ?>" }
-            ]
-        };
+            // Validation rules mapping
+            const fields = {
+                "#email": [{
+                        rule: "required",
+                        errorMessage: errorIcon + "<?php echo MSG['PE'] . 'Email'; ?>"
+                    },
+                    {
+                        rule: "email",
+                        errorMessage: errorIcon + "<?php echo MSG['IV'] . 'Email'; ?>"
+                    }
+                ],
+                "#password": [{
+                        rule: "required",
+                        errorMessage: errorIcon + "<?php echo MSG['PE'] . 'Password'; ?>"
+                    },
+                    {
+                        rule: "minLength",
+                        value: 6,
+                        errorMessage: errorIcon + "<?php echo 'Password' . MSG['MINL']; ?>"
+                    }
+                ]
+            };
 
-        // Apply validation dynamically
-        Object.entries(fields).forEach(([selector, rules]) => validation.addField(selector, rules));
-        validation.onSuccess(() => document.getElementById("loginForm").submit());
-    });
-</script>
+            // Apply validation dynamically
+            Object.entries(fields).forEach(([selector, rules]) => validation.addField(selector, rules));
+            validation.onSuccess(() => document.getElementById("loginForm").submit());
+        });
+    </script>

@@ -1,4 +1,6 @@
 <?php
+ob_start(); // Start output buffering
+
 require_once 'src/Config.php';
 require_once 'src/packages/Router.php';
 Config::APP['isDynamicApp'] && (require_once 'src/DBFunctions.php') && define('CORE', DBFunctions::pdo());
@@ -44,4 +46,12 @@ Route::pathNotFound(function ($path) {
 });
 
 Route::run(BASEPATH);
+
+$content = ob_get_contents(); // Get the buffered content
+ob_end_clean(); // End output buffering
+
+echo 'Page Output Size: ' . strlen($content) . ' bytes';
+
+// Finally, send the content to the browser
+echo $content;
 ?>

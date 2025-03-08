@@ -1,23 +1,27 @@
 <?php
-class Utils {
-    
+class Utils
+{
     // Sanitize input data
-    public static function sanitize($data) {
+    public static function sanitize($data)
+    {
         return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
     }
 
     // Hash password securely
-    public static function hashPassword($password) {
+    public static function hashPassword($password)
+    {
         return password_hash($password, PASSWORD_BCRYPT);
     }
 
     // Verify password against stored hash
-    public static function verifyPassword($password, $hash) {
+    public static function verifyPassword($password, $hash)
+    {
         return password_verify($password, $hash);
     }
 
     // Parse a date into a formatted string
-    public static function parseDate($data) {
+    public static function parseDate($data)
+    {
         try {
             $dateTime = new DateTime($data);
             return ["msg" => $dateTime->format('jS F Y h:i A'), "sts" => true];
@@ -27,7 +31,8 @@ class Utils {
     }
 
     // Get current date and time in different formats
-    public static function dateTimeNow($type = 'full') {
+    public static function dateTimeNow($type = 'full')
+    {
         $formats = [
             'full'     => 'jS F Y h:i A',
             'date'     => 'Y-m-d',
@@ -45,7 +50,8 @@ class Utils {
     }
 
     // Get user's real IP address
-    public static function myIp() {
+    public static function myIp()
+    {
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -57,7 +63,8 @@ class Utils {
     }
 
     // Generate SEO-friendly URL slugs
-    public static function urlSlug($string) {
+    public static function urlSlug($string)
+    {
         if (empty($string)) {
             return ["msg" => MSG['IV'] . "Input.", "sts" => false];
         }
@@ -67,7 +74,8 @@ class Utils {
     }
 
     // Parce Url to Text
-    public static function getUrlText($url, $true = true) {
+    public static function getUrlText($url, $true = true)
+    {
         $path = parse_url($url, PHP_URL_PATH);
         $segments = explode('/', trim($path, '/'));
         $lastSegment = end($segments);
@@ -76,13 +84,34 @@ class Utils {
     }
 
     // Get Current Url as Text
-    public static function getCurrentUrl($current = true) {
+    public static function getCurrentUrl($current = true)
+    {
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
         $host = $_SERVER['HTTP_HOST'];
-        $uri = $_SERVER['REQUEST_URI'];        
+        $uri = $_SERVER['REQUEST_URI'];
         return $protocol . "://" . $host . ($current ? $uri : "");
     }
-
+    //Renders The Input
+    public static function renderInput(
+        string $type,
+        string $label,
+        string $name,
+        string $id,
+        string $value = '',
+        string $class = '',
+        string $placeholder = '',
+        bool $required = false,
+        bool $labelRequired = true,
+        bool $linkRequired = false,
+        string $linkName = '',
+        string $linkHref = '',
+        bool $linkBlank = false,
+        string $linkClass = ''
+    ) {
+        $isRequired = $required ? ' required' : '';
+        $requiredAsterisk = $required ? ' <font color="#b81111">*</font>' : '';
+        $renderLink = $linkRequired ? "<span class='form-label-description'><a target='" . ($linkBlank ? "_blank" : "_self") . "' class='{$linkClass}' href='{$linkHref}'>{$linkName}</a></span>" : '';
+        $renderLabel = $labelRequired ? "<label class='form-label'>{$label}{$requiredAsterisk}{$renderLink}</label>" : '';
+        return $renderLabel . "<input id='{$id}' type='{$type}' name='{$name}' class='form-control {$class}' value='{$value}' placeholder='{$placeholder}'{$isRequired}>";
+    }
 }
-
-?>

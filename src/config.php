@@ -39,6 +39,22 @@ class Config {
         'secret' => 'TEST_DEV',
         'recapcha' => '1x0000000000000000000000000000000AA'
     ];
+
+    public const IMPORT = [
+        'header' => '
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/css/tabler.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
+        ',
+        'footer' => '
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/just-validate@latest/dist/just-validate.production.min.js"></script>
+        ',
+        'popupjs' =>'<script src="https://dainty-macaron-bfe024.netlify.app/PopupJs.js"></script>',
+        'cloudflare' => '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>',
+        'appjs' => '',
+        'adminjs' => ''
+    ];
+
 }
 
 ?>
