@@ -14,7 +14,7 @@ class Database {
                 $dbConfig['password']
             );
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            if (Config::SESSION_TYPE['type'] === STRINGS['SESSION']) {
+            if (Config::SESSION_TYPE['type'] === STR['SESSION']) {
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
             }}

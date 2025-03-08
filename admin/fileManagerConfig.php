@@ -1,6 +1,6 @@
 <?php
-require_once 'src/Config.php';
-Config::APP['isDynamicApp'] && (require_once 'src/DBFunctions.php') && define('CORE', DBFunctions::pdo());
+require_once '../src/Config.php';
+Config::APP['isDynamicApp'] && (require_once '../src/DBFunctions.php') && define('CORE', DBFunctions::pdo());
 $uploads_dir = Config::APP['uploads_dir'];
 $allowedExtensions =Config::APP['allowedExtensions'];
 $maxFileSize = Config::APP['maxFileSize'];

@@ -249,10 +249,13 @@ require "fileManagerConfig.php";
             </div>
 
             <!-- Upload Status -->
-            <div style="    overflow: scroll;width:30%;height:88vh;border:1px solid #dddddd" id="">
+             <div style="    overflow: scroll;width:30%;height:88vh;border:1px solid #dddddd">
+                <div><label class="h-button"><input id="convertToWebp" type="checkbox"><span style="padding-left: 9px;">Compress, convert, and enhance quality to Webp.</span></label></div>
+            <div>
                 <div style=" display:none;top: 50%; position: absolute;width:30%; text-align: center;" id="notask">✔️ No
                     Tasks Pending.</div>
                 <ul style="width:100%" id="UfileList"></ul>
+            </div>
             </div>
         </div>
 
@@ -374,6 +377,7 @@ require "fileManagerConfig.php";
         formData.append("action", "upload");
         formData.append("path", currentPath);
         formData.append("files[]", file);
+        formData.append("convert_webp", document.getElementById('convertToWebp').checked ? 1 : 0);
 
         let fileId = file.name.replace(/\W/g, ''); // Unique identifier for file
 

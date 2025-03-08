@@ -6,15 +6,17 @@ use Steampixel\Route;
 define('BASEPATH', '/admin/');
 
 Route::add('/', function () {
-    require "views/login.php";
-
-});
+   require "views/login.php";
+}, ['GET', 'POST']);
 
 Route::add('/home', function () {
     require "views/home.php";
 }, ['GET', 'POST']);
 
 
+Route::add('/fileManager', function () {
+    require "fileManager.php";
+});
 
 /*
 //SingleParm

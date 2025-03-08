@@ -9,16 +9,14 @@ Route::add('/', function () use ($pdo){
     require "views/home.php";
     //echo CORE->encrypt("sacssdddsfsdsac");
     //print_r(CORE->login("tharun@gmail.com", 'tharun@gmail.com'));
-    //print_r(CORE->userLoggedIn());
+    print_r(CORE->userLoggedIn());
 });
 
 Route::add('/contact-us', function () {
     require "views/home.php";
 }, ['GET', 'POST']);
 
-Route::add('/fileManager', function () {
-    require "fileManager.php";
-});
+
 
 /*
 //SingleParm
