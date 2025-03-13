@@ -2,7 +2,7 @@
 if (!defined('BASEPATH')) {
 	header('Location:/404');
 }
-require_once __DIR__ . '/../../../src/Utils.php';
+require_once __DIR__ . '/../../../src/utils.php';
 $site_name = Config::APP['name'];
 $site_url = Utils::getCurrentUrl();
 $url_text = Utils::getUrlText($site_url)["msg"];

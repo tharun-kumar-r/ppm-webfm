@@ -1,9 +1,9 @@
 <?php
 ob_start(); // Start output buffering
 
-require_once 'src/Config.php';
-require_once 'src/packages/Router.php';
-Config::APP['isDynamicApp'] && (require_once 'src/DBFunctions.php') && define('CORE', DBFunctions::pdo());
+require_once 'src/config.php';
+require_once 'src/packages/router.php';
+Config::APP['isDynamicApp'] && (require_once 'src/dbFunctions.php') && define('CORE', DBFunctions::pdo());
 use Steampixel\Route;
 define('BASEPATH', '/');
 

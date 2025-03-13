@@ -1,5 +1,5 @@
 <?php
-require "fileManagerConfig.php";
+require "fileManagerconfig.php";
 
 
 ?>

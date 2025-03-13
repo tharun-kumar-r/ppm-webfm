@@ -1,6 +1,6 @@
 <?php
-require_once 'Utils.php';
-require_once 'DataBase.php';
+require_once 'utils.php';
+require_once 'dataBase.php';
 
 class DBFunctions
 {
