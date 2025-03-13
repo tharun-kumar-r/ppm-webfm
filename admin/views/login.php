@@ -10,10 +10,10 @@ if (isset($_POST['login'])) {
         if (CORE->login($_POST['email'], $_POST['password'], isset($_POST['saveLogin']))['sts']) {
             echo "<script>window.location='" . BASEPATH . "home'</script>";
         } else {
-            echo "<script>window.onload = function() {showError('Invalid Login Details!.')}</script>";
+            echo "<script>window.onload = () => showError('Invalid Login Details!')</script>";
         }
     } else {
-        echo "<script>window.onload = function() {showError('" . MSG['RECAPTCHA_ERROR'] . "')}</script>";
+        echo "<script>window.onload = () => showError('" . MSG['RECAPTCHA_ERROR'] . "')</script>";
     }
 }
 
@@ -69,9 +69,9 @@ if (isset($_POST['login'])) {
                             required: true,
                             linkRequired: true,
                             linkName: "Forgot password?",
-                            linkHref:"forget"
+                            linkHref: "forget"
                         ) ?>
-                    
+
                     </div>
                     <div class="mb-2">
                         <label class="form-check">
@@ -90,37 +90,29 @@ if (isset($_POST['login'])) {
         </div>
 
     </div>
-    <?php echo Config::IMPORT['footer'] . Config::IMPORT['popupjs'] . Config::IMPORT['cloudflare']; ?>
+    <?php echo Config::IMPORT['footer'] . Config::IMPORT['popupjs'] . Config::IMPORT['cloudflare'] . Config::IMPORT['appAdminJs']; ?>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const validation = new JustValidate("#loginForm");
             const errorIcon = '<?php echo ICO['info']; ?>';
-
-            // Validation rules mapping
-            const fields = {
+            const fields = validateRule({
                 "#email": [{
-                        rule: "required",
-                        errorMessage: errorIcon + "<?php echo MSG['PE'] . 'Email'; ?>"
-                    },
-                    {
-                        rule: "email",
-                        errorMessage: errorIcon + "<?php echo MSG['IV'] . 'Email'; ?>"
+                        rule: "required", message: "<?php echo MSG['PE'] . 'Email'; ?>"
+                    }, {
+                        rule: "email", message: "<?php echo MSG['IV'] . 'Email'; ?>"
+                    }, {
+                        rule: "minLength", value: 8, message: "<?php echo MSG['IV'] . 'Email'; ?>"
                     }
                 ],
                 "#password": [{
-                        rule: "required",
-                        errorMessage: errorIcon + "<?php echo MSG['PE'] . 'Password'; ?>"
-                    },
-                    {
-                        rule: "minLength",
-                        value: 6,
-                        errorMessage: errorIcon + "<?php echo 'Password' . MSG['MINL']; ?>"
+                        rule: "required", message: "<?php echo MSG['PE'] . 'Password'; ?>"
+                    }, {
+                        rule: "minLength", value: 6, message: "<?php echo 'Password' . MSG['MINL']; ?>"
                     }
                 ]
-            };
+            }, errorIcon);
 
-            // Apply validation dynamically
-            Object.entries(fields).forEach(([selector, rules]) => validation.addField(selector, rules));
-            validation.onSuccess(() => document.getElementById("loginForm").submit());
+            validate("#loginForm", fields, () => {
+                document.querySelector("#loginForm").submit();
+            });
         });
     </script>

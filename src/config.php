@@ -20,8 +20,8 @@ class Config {
         'uploads_dir' => "../uploads/",
         'allowedExtensions' => ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'txt', 'doc', 'docx'],
         'maxFileSize' => (6 * 1024 * 1024),
-        'allowedsize' => (6 * 1024 * 1024)
-
+        'allowedsize' => (6 * 1024 * 1024),
+        'adminPath' => '/admin/'
     ];
 
     public const DB = [
@@ -35,7 +35,7 @@ class Config {
 
     public const SESSION_TYPE = [
         'type' => STR['COOKIE'], //STRINGS['SESSION'], 
-        'session_name' => 'TEST_DEV_SNAME',
+        'sessionName' => 'TEST_DEV_SNAME',
         'secret' => 'TEST_DEV',
         'recapcha' => '1x0000000000000000000000000000000AA'
     ];
@@ -47,12 +47,15 @@ class Config {
         ',
         'footer' => '
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/just-validate@latest/dist/just-validate.production.min.js"></script>
+        <script src="/assets/common/script.js"></script>
         ',
-        'popupjs' =>'<script src="https://dainty-macaron-bfe024.netlify.app/PopupJs.js"></script>',
+        'popupjs' =>'<script src="https://cdn.jsdelivr.net/gh/tharun-kumar-r/PopupJs/PopupJs.min.js?v=1.0"></script>',
         'cloudflare' => '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>',
-        'appjs' => '',
-        'adminjs' => ''
+        'appJs' => '<script src="/assets/js/app.js"></script>',
+        'appAdminJs' => '<script src="' . self::APP['adminPath'] . 'assets/js/app.js"></script>'
+        
     ];
 
 }

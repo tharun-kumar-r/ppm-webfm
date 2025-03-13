@@ -1,11 +1,8 @@
 <?php 
 require_once "shared/header.php";
-
-
-
-
 ?>
 
+<h1>dwferhtyu</h1>
 
 
 

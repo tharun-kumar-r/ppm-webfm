@@ -34,6 +34,8 @@ require "fileManagerConfig.php";
         border-bottom: 1px solid #dfdfdf;
         align-items: center;
         justify-content: space-between;
+        position: sticky;
+        top: 0;
     }
 
     .file-container {

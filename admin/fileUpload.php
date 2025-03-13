@@ -1,5 +1,5 @@
 <?php
-require "fileManagerConfig.php";
+require_once "fileManagerConfig.php";
 
 if (!is_dir($uploads_dir))
     mkdir($uploads_dir, 0777, true);

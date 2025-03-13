@@ -1,10 +1,10 @@
 <?php
-ob_start(); // Start output buffering
+
 require_once '../src/Config.php';
 require_once '../src/packages/Router.php';
 Config::APP['isDynamicApp'] && (require_once '../src/DBFunctions.php') && define('CORE', DBFunctions::pdo());
 use Steampixel\Route;
-define('BASEPATH', '/admin/');
+define('BASEPATH', Config::APP['adminPath']);
 
 Route::add('/', function () {
    require "views/login.php";
@@ -15,7 +15,7 @@ Route::add('/home', function () {
 }, ['GET', 'POST']);
 
 
-Route::add('/fileManager', function () {
+Route::add('/file-manager', function () {
     require "fileManager.php";
 });
 
@@ -46,12 +46,7 @@ Route::pathNotFound(function ($path) {
 
 Route::run(BASEPATH);
 
-?>
 
-<?php 
-$content = ob_get_contents(); // Get the buffered content
-ob_end_clean(); // End output buffering
-echo 'Page Output Size: ' . strlen($content) . ' bytes';
-// Finally, send the content to the browser
-echo $content;
+
+
 ?>

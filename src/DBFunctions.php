@@ -138,14 +138,14 @@ class DBFunctions
             ], true);
 
             if (self::$session['type'] === STR['COOKIE']) {
-                setcookie(self::$session['session_name'], $authKey, [
+                setcookie(self::$session['sessionName'], $authKey, [
                     "httponly" => true,
                     "samesite" => "Strict",
                     "path" => "/",
                     "expires" => $expiry_time
                 ]);
             } else {
-                $_SESSION[self::$session['session_name']] = $authKey;
+                $_SESSION[self::$session['sessionName']] = $authKey;
             }
             return ["msg" => 'Login' . MSG['SL'], "sts" => true];
         }
@@ -155,7 +155,7 @@ class DBFunctions
     public function checkSession()
     {
         if (self::$session['type'] === STR['COOKIE']) {
-            $token = $_COOKIE[self::$session['session_name']] ?? null;
+            $token = $_COOKIE[self::$session['sessionName']] ?? null;
 
             if (!$token) {
                 return self::logout();
@@ -169,7 +169,7 @@ class DBFunctions
 
             return ($user && $user['count'] > 0) ? ['sessionSts' => true] : self::logout();
         } else {
-            return !empty($_SESSION[self::$session['session_name']])
+            return !empty($_SESSION[self::$session['sessionName']])
                 ? ['sessionSts' => true]
                 : self::logout();
         }
@@ -179,7 +179,7 @@ class DBFunctions
     public function logout()
     {
         if (self::$session['type'] === STR['COOKIE']) {
-            setcookie(self::$session['session_name'], "", time() - 3600, "/", "", true, true);
+            setcookie(self::$session['sessionName'], "", time() - 3600, "/", "", true, true);
         } else {
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
@@ -192,9 +192,9 @@ class DBFunctions
     public function userLoggedIn()
     {
         if (self::$session['type'] === STR['COOKIE']) {
-            return self::decrypt($_COOKIE[self::$session['session_name']]);
+            return self::decrypt($_COOKIE[self::$session['sessionName']]);
         } else {
-            return self::decrypt($_SESSION[self::$session['session_name']]);
+            return self::decrypt($_SESSION[self::$session['sessionName']]);
         }
     }
 
