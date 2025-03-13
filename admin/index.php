@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Start output buffering
 
 require_once '../src/Config.php';
 require_once '../src/packages/Router.php';
@@ -48,5 +49,12 @@ Route::run(BASEPATH);
 
 
 
+$content = ob_get_contents(); // Get buffered content
+ob_end_clean(); // End buffering and clean output
+$pageSize = strlen($content); // Calculate size in bytes
+// Display the page size before sending the content
+echo "Page Output Size: {$pageSize} bytes<br>";
+// Send the buffered content to the browser
+echo $content;
 
 ?>

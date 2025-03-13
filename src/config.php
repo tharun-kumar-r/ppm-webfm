@@ -26,9 +26,9 @@ class Config {
 
     public const DB = [
         'host' => 'localhost',
-        'dbname' => 'test',
-        'username' => 'root',
-        'password' => '',
+        'dbname' => 'u849653985_test',
+        'username' => 'u849653985_test',
+        'password' => '+aS6d5/E3',
         'charset' => 'utf8mb4',
         'initDB'=> false, //For app Database    
     ];

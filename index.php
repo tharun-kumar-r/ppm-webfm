@@ -47,11 +47,12 @@ Route::pathNotFound(function ($path) {
 
 Route::run(BASEPATH);
 
-$content = ob_get_contents(); // Get the buffered content
-ob_end_clean(); // End output buffering
 
-echo 'Page Output Size: ' . strlen($content) . ' bytes';
-
-// Finally, send the content to the browser
+$content = ob_get_contents(); // Get buffered content
+ob_end_clean(); // End buffering and clean output
+$pageSize = strlen($content); // Calculate size in bytes
+// Display the page size before sending the content
+echo "Page Output Size: {$pageSize} bytes<br>";
+// Send the buffered content to the browser
 echo $content;
 ?>
