@@ -1,5 +1,5 @@
 <?php 
-require 'Constants.php';
+require 'constants.php';
 date_default_timezone_set('Asia/Kolkata');
 
 class Config {
@@ -25,7 +25,7 @@ class Config {
     ];
 
     public const DB = [
-        'host' => 'localhost',
+        'host' => 'localhost', 
         'dbname' => 'u849653985_test',
         'username' => 'u849653985_test',
         'password' => '+aS6d5/E3',
