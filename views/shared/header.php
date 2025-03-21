@@ -7,8 +7,7 @@ $site_name = Config::APP['name'];
 $site_url = Utils::getCurrentUrl();
 $url_text = Utils::getUrlText($site_url)["msg"];
 $page_title = $url_text ? "$url_text | $site_name" : $site_name;
-$pdo = DBFunctions::pdo();
-$companyData = $pdo->query("CALL GetCompanyAndMetadata(?, ?)", [1, $url_text ? Utils::getUrlText($site_url, false)["msg"] : '/'], true);
+$companyData = CORE->query("CALL GetCompanyAndMetadata(?, ?)", [1, $url_text ? Utils::getUrlText($site_url, false)["msg"] : '/'], true);
 $metaData = Config::APP['isDynamicApp'] && $companyData['metadata_exists'] ? $companyData : Config::APP['metaData'];
 
 ?>

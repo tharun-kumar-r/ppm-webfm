@@ -48,7 +48,11 @@ CREATE TABLE `token` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-CREATE PROCEDURE `GetCompanyAndMetadata` (IN `company_id` INT, IN `page_url_param` VARCHAR(255))
+DELIMITER $$
+CREATE PROCEDURE GetCompanyAndMetadata (
+    IN company_id INT, 
+    IN page_url_param VARCHAR(255)
+)
 BEGIN
     SELECT 
         c.*,
@@ -58,8 +62,10 @@ BEGIN
         m.og_image, 
         IF(m.page_url IS NOT NULL, 1, 0) AS metadata_exists
     FROM company_info c
-    LEFT JOIN metadata m ON m.page_url = page_url_param
+    LEFT JOIN metadata m ON m.page_url = page_url_param COLLATE utf8mb4_unicode_ci
     WHERE c.id = company_id
     LIMIT 1;
-END
+END $$
+DELIMITER ;
+
 

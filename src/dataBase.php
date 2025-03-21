@@ -30,6 +30,8 @@ class Database {
         return self::$instance->pdo;
     }
 }
+
+
 if (Config::DB['initDB']) {
     try {
         $pdo = Database::sql();
